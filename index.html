@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart File Automation System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <span class="logo-icon">🔒</span>
+                <div>
+                    <h1>Smart File Automation</h1>
+                    <p class="subtitle">Advanced Security & Organization System</p>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value" id="totalFiles">0</span>
+                    <span class="stat-label">Total Files</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="documentsCount">0</span>
+                    <span class="stat-label">Documents</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="imagesCount">0</span>
+                    <span class="stat-label">Images</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="videosCount">0</span>
+                    <span class="stat-label">Videos</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <label class="mode-label">
+                <input type="radio" name="mode" value="normal" checked onchange="setMode('normal')">
+                <span>Normal Mode</span>
+            </label>
+            <label class="mode-label">
+                <input type="radio" name="mode" value="dryrun" onchange="setMode('dryrun')">
+                <span>Dry Run Mode</span>
+            </label>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="🔍 Search files by name..." class="search-input">
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+            <div class="upload-content">
+                <span class="upload-icon">📤</span>
+                <p>Drag & Drop files here or click to upload</p>
+                <small>Supports all file types</small>
+            </div>
+            <input type="file" id="fileInput" multiple style="display:none;">
+        </div>
+
+        <!-- Main Action Buttons -->
+        <div class="actions-grid">
+            <button class="btn btn-primary" onclick="organizeFiles()">
+                <span>📁</span> Organize Files
+            </button>
+            <button class="btn btn-info" onclick="showDashboard()">
+                <span>📊</span> Dashboard
+            </button>
+            <button class="btn btn-warning" onclick="findDuplicates()">
+                <span>🔍</span> Find Duplicates
+            </button>
+            <button class="btn btn-danger" onclick="showRecycleBin()">
+                <span>🗑️</span> Recycle Bin
+            </button>
+        </div>
+
+        <!-- Cyber Security Tools -->
+        <div class="cyber-tools-section">
+            <h2>🔒 Cybersecurity Tools</h2>
+            <div class="tools-grid">
+                <button class="tool-btn" onclick="showPortScanner()">
+                    <span>🔌</span> Port Scanner
+                </button>
+                <button class="tool-btn" onclick="showPasswordChecker()">
+                    <span>🔑</span> Password Strength
+                </button>
+                <button class="tool-btn" onclick="showFileIntegrity()">
+                    <span>🛡️</span> File Integrity
+                </button>
+                <button class="tool-btn" onclick="showNetworkInfo()">
+                    <span>🌐</span> Network Info
+                </button>
+            </div>
+        </div>
+
+        <!-- Additional Features -->
+        <div class="features-section">
+            <h2>⚙️ Advanced Features</h2>
+            <div class="features-grid">
+                <button class="feature-btn" onclick="showWatchdog()">
+                    <span>👁️</span> Start Watchdog
+                </button>
+                <button class="feature-btn" onclick="showScheduler()">
+                    <span>⏰</span> Schedule Tasks
+                </button>
+                <button class="feature-btn" onclick="showEmailReminder()">
+                    <span>✉️</span> Email Reminder
+                </button>
+                <button class="feature-btn" onclick="viewLogs()">
+                    <span>📝</span> View Logs
+                </button>
+            </div>
+        </div>
+
+        <!-- File Categories Display -->
+        <div class="categories-section" id="categoriesContainer"></div>
+
+        <!-- Dashboard Modal -->
+        <div class="modal" id="dashboardModal" style="display:none;">
+            <div class="modal-content large-modal">
+                <div class="modal-header">
+                    <h2>📊 Analytics Dashboard</h2>
+                    <button class="close-btn" onclick="closeDashboard()">✕</button>
+                </div>
+                <div class="dashboard-content">
+                    <div class="analytics-cards">
+                        <div class="analytics-card">
+                            <h3>Total Activity</h3>
+                            <div class="big-stat" id="totalActions">0</div>
+                            <p>Actions Performed</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h3>Files Organized</h3>
+                            <div class="big-stat" id="filesOrganized">0</div>
+                            <p>Successfully Sorted</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h3>Files Deleted</h3>
+                            <div class="big-stat" id="filesDeleted">0</div>
+                            <p>In Recycle Bin</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h3>Space Saved</h3>
+                            <div class="big-stat" id="spaceSaved">0 MB</div>
+                            <p>Total Organized</p>
+                        </div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h3>File Distribution</h3>
+                            <canvas id="fileTypeChart"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h3>Activity Timeline (7 Days)</h3>
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="activity-log-section">
+                        <h3>Recent Activity</h3>
+                        <div id="activityLogList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Port Scanner Modal -->
+        <div class="modal" id="portScannerModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🔌 Port Scanner</h2>
+                    <button class="close-btn" onclick="closePortScanner()">✕</button>
+                </div>
+                <div class="tool-content">
+                    <input type="text" id="scanIP" placeholder="Enter IP Address (e.g., 192.168.1.1)" class="tool-input">
+                    <button class="btn btn-primary" onclick="scanPorts()">Scan Ports</button>
+                    <div id="portScanResults" class="results-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Checker Modal -->
+        <div class="modal" id="passwordCheckerModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🔑 Password Strength Checker</h2>
+                    <button class="close-btn" onclick="closePasswordChecker()">✕</button>
+                </div>
+                <div class="tool-content">
+                    <input type="password" id="passwordInput" placeholder="Enter password to check" class="tool-input">
+                    <button class="btn btn-primary" onclick="checkPassword()">Check Strength</button>
+                    <div id="passwordResults" class="results-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Integrity Modal -->
+        <div class="modal" id="fileIntegrityModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🛡️ File Integrity Checker</h2>
+                    <button class="close-btn" onclick="closeFileIntegrity()">✕</button>
+                </div>
+                <div class="tool-content">
+                    <p>Select files to check for integrity and generate hashes</p>
+                    <input type="file" id="integrityFileInput" multiple class="tool-input">
+                    <button class="btn btn-primary" onclick="checkFileIntegrity()">Generate Hash</button>
+                    <div id="integrityResults" class="results-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Info Modal -->
+        <div class="modal" id="networkInfoModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🌐 Network Information</h2>
+                    <button class="close-btn" onclick="closeNetworkInfo()">✕</button>
+                </div>
+                <div class="tool-content">
+                    <button class="btn btn-primary" onclick="getNetworkInfo()">Get Network Info</button>
+                    <div id="networkResults" class="results-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Reminder Modal -->
+        <div class="modal" id="emailModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>✉️ Email Reminder</h2>
+                    <button class="close-btn" onclick="closeEmailReminder()">✕</button>
+                </div>
+                <div class="tool-content">
+                    <input type="email" id="emailInput" placeholder="Recipient Email" class="tool-input">
+                    <input type="text" id="emailSubject" placeholder="Subject" class="tool-input">
+                    <textarea id="emailMessage" placeholder="Message" class="tool-textarea"></textarea>
+                    <button class="btn btn-primary" onclick="sendEmail()">Send Reminder</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recycle Bin Modal -->
+        <div class="modal" id="recycleBinModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🗑️ Recycle Bin</h2>
+                    <button class="close-btn" onclick="hideRecycleBin()">✕</button>
+                </div>
+                <div id="recycleBinList" class="recycle-list"></div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="emptyRecycleBin()">Empty Bin</button>
+                    <button class="btn btn-secondary" onclick="hideRecycleBin()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Modal -->
+        <div class="modal" id="previewModal" style="display:none;">
+            <div class="modal-content preview-content">
+                <button class="close-btn" onclick="closePreview()">✕</button>
+                <div id="previewContent"></div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
